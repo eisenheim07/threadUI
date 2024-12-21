@@ -2,11 +2,17 @@ package com.example.threadui
 
 import android.os.Bundle
 import android.os.Handler
-import android.os.Message
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.threadui.databinding.ActivityMainBinding
-import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.math.log
 
 
 class MainActivity : AppCompatActivity() {
@@ -19,21 +25,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setListeners()
+        /*THREAD FREEZE UI*/
+//        setListeners()
+//        setHandler()
 
-        handler = Handler { message ->
-            val bundle = message.data
-            val msg = bundle.getString("MSG_KEY") ?: "NA"
-
-//            binding.txtTxt.text = "File Downloaded."
-//            binding.btnBtn.text = "File Downloaded."
-
-            binding.txtTxt.text = msg
-            binding.btnBtn.text = msg
-
-            true
-        }
-
+        /*COROUTINE*/
+//        getFollowers()
     }
 
     private fun setListeners() {
@@ -74,6 +71,39 @@ class MainActivity : AppCompatActivity() {
             binding.txtTxt.text = "Button CLICKED."
             binding.btnBtn.text = "Button CLICKED."
         }
+    }
+
+    private fun setHandler() {
+        handler = Handler { message ->
+            val bundle = message.data
+            val msg = bundle.getString("MSG_KEY") ?: "NA"
+
+//            binding.txtTxt.text = "File Downloaded."
+//            binding.btnBtn.text = "File Downloaded."
+
+            binding.txtTxt.text = msg
+            binding.btnBtn.text = msg
+
+            true
+        }
+    }
+
+    private fun getFollowers() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val fb = async { getFBFollowers() }
+            val insta = async { getInstaFollowers() }
+            println("FB = ${fb.await()}, INSTA = ${insta.await()}")
+        }
+    }
+
+    private suspend fun getFBFollowers(): Int {
+        delay(3000)
+        return 74
+    }
+
+    private suspend fun getInstaFollowers(): Int {
+        delay(3000)
+        return 99
     }
 
 }
